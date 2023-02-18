@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Alura.OnlineAuctions.WebApp.Data;
 using Alura.OnlineAuctions.WebApp.Models;
 using Microsoft.AspNetCore.Routing;
+using Alura.OnlineAuctions.WebApp.Data;
 
 namespace Alura.OnlineAuctions.WebApp.Controllers
 {

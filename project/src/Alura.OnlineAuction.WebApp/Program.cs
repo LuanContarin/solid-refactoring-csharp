@@ -1,3 +1,6 @@
+using Alura.OnlineAuctions.WebApp.Data;
+using Alura.OnlineAuctions.WebApp.Data.EfCore;
+using Alura.OnlineAuctions.WebApp.Data.Interfaces;
 using Alura.OnlineAuctions.WebApp.Seeding;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,6 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 DatabaseGenerator.Seed();
 
 // Add services to the container.
+
+builder.Services.AddDbContext<AppDbContext>();
+
+builder.Services.AddTransient<IAuctionDao, AuctionDao>();
+builder.Services.AddTransient<ICategoryDao, CategoryDao>();
+
 builder.Services
     .AddControllersWithViews()
     .AddNewtonsoftJson(options =>

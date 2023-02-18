@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Alura.OnlineAuctions.WebApp.Data.Interfaces;
 using Alura.OnlineAuctions.WebApp.Models;
-using Alura.OnlineAuctions.WebApp.Data;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Alura.OnlineAuctions.WebApp.Controllers
 {
@@ -9,61 +8,55 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
     [Route("/api/leiloes")]
     public class LeilaoApiController : ControllerBase
     {
-        AppDbContext _context;
+        private readonly IAuctionDao _auctionDao;
+        private readonly ICategoryDao _categoryDao;
 
-        public LeilaoApiController()
+        public LeilaoApiController(IAuctionDao auctionDao, ICategoryDao categoryDao)
         {
-            _context = new AppDbContext();
+            _auctionDao = auctionDao;
+            _categoryDao = categoryDao;
         }
 
         [HttpGet]
         public IActionResult EndpointGetLeiloes()
         {
-            var leiloes = _context.Leiloes
-                .Include(l => l.Categoria);
-            return Ok(leiloes);
+            var auctions = _auctionDao.ListAuctions();
+            return Ok(auctions);
         }
 
         [HttpGet("{id}")]
         public IActionResult EndpointGetLeilaoById(int id)
         {
-            var leilao = _context.Leiloes.Find(id);
-            if (leilao == null)
-            {
+            var auction = _auctionDao.GetAuctionById(id);
+            if (auction is null)
                 return NotFound();
-            }
-            return Ok(leilao);
+
+            return Ok(auction);
         }
 
         [HttpPost]
-        public IActionResult EndpointPostLeilao(Leilao leilao)
+        public IActionResult EndpointPostLeilao(Leilao auction)
         {
-            _context.Leiloes.Add(leilao);
-            _context.SaveChanges();
-            return Ok(leilao);
+            _auctionDao.InsertAuction(auction);
+            return CreatedAtAction(nameof(EndpointGetLeilaoById), auction);
         }
 
         [HttpPut]
-        public IActionResult EndpointPutLeilao(Leilao leilao)
+        public IActionResult EndpointPutLeilao(Leilao auction)
         {
-            _context.Leiloes.Update(leilao);
-            _context.SaveChanges();
-            return Ok(leilao);
+            _auctionDao.UpdateAuction(auction);
+            return Ok(auction);
         }
 
         [HttpDelete("{id}")]
         public IActionResult EndpointDeleteLeilao(int id)
         {
-            var leilao = _context.Leiloes.Find(id);
-            if (leilao == null)
-            {
+            var auction = _auctionDao.GetAuctionById(id);
+            if (auction is null)
                 return NotFound();
-            }
-            _context.Leiloes.Remove(leilao);
-            _context.SaveChanges();
+
+            _auctionDao.DeleteAuction(auction);
             return NoContent();
         }
-
-
     }
 }

@@ -1,14 +1,10 @@
 using Alura.OnlineAuctions.WebApp.Models;
-using Alura.OnlineAuctions.WebApp.Seeding;
 using Microsoft.EntityFrameworkCore;
 
 namespace Alura.OnlineAuctions.WebApp.Data
 {
-    public class AppDbContext : DbContext
+    public sealed class AppDbContext : DbContext
     {
-        public DbSet<Leilao> Leiloes { get; set; }
-        public DbSet<Categoria> Categorias { get; set; }
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=AluraAuctionsDB;Trusted_Connection=True;TrustServerCertificate=True;");
@@ -22,5 +18,7 @@ namespace Alura.OnlineAuctions.WebApp.Data
                 .HasForeignKey(l => l.IdCategoria);
         }
 
+        public DbSet<Leilao> Leiloes { get; set; }
+        public DbSet<Categoria> Categorias { get; set; }
     }
 }
