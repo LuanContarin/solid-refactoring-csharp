@@ -13,33 +13,33 @@ namespace Alura.OnlineAuctions.WebApp.Data.EfCore
             _dbContext = dbContext;
         }
 
-        public IList<Leilao> ListAuctions()
+        public IList<Auction> ListAuctions()
         {
-            return _dbContext.Leiloes
-                .Include(x => x.Categoria)
-            .ToList();
+            return _dbContext.Auctions
+                .Include(x => x.Category)
+                .ToList();
         }
 
-        public Leilao? GetAuctionById(int id)
+        public Auction? GetAuctionById(int id)
         {
-            return _dbContext.Leiloes.Find(id);
+            return _dbContext.Auctions.Find(id);
         }
 
-        public void InsertAuction(Leilao auction)
+        public void InsertAuction(Auction auction)
         {
-            _dbContext.Leiloes.Add(auction);
+            _dbContext.Auctions.Add(auction);
             _dbContext.SaveChanges();
         }
 
-        public void UpdateAuction(Leilao auction)
+        public void UpdateAuction(Auction auction)
         {
-            _dbContext.Leiloes.Update(auction);
+            _dbContext.Auctions.Update(auction);
             _dbContext.SaveChanges();
         }
 
-        public void DeleteAuction(Leilao auction)
+        public void DeleteAuction(Auction auction)
         {
-            _dbContext.Leiloes.Remove(auction);
+            _dbContext.Auctions.Remove(auction);
             _dbContext.SaveChanges();
         }
     }

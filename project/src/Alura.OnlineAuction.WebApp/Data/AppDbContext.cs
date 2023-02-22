@@ -12,13 +12,13 @@ namespace Alura.OnlineAuctions.WebApp.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Leilao>()
-                .HasOne(l => l.Categoria)
-                .WithMany(c => c.Leiloes)
-                .HasForeignKey(l => l.IdCategoria);
+            modelBuilder.Entity<Auction>()
+                .HasOne(l => l.Category)
+                .WithMany(c => c.Auctions)
+                .HasForeignKey(l => l.IdCategory);
         }
 
-        public DbSet<Leilao> Leiloes { get; set; }
-        public DbSet<Categoria> Categorias { get; set; }
+        public DbSet<Auction> Auctions { get; set; }
+        public DbSet<Category> Categories { get; set; }
     }
 }

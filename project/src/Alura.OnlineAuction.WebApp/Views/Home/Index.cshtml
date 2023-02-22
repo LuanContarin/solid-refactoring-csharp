@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CategoriaComInfoLeilao>
+﻿@model IEnumerable<CategoryWithInfoAuction>
 
 @{
     Layout = "_AreaPublica";
@@ -6,21 +6,21 @@
 }
 
 <header>
-    <h1>Bem vindo a Auksjon, seu site de leilões.</h1>
+    <h1>Welcome to Auksjon, your auction site.</h1>
     <p>Etiam quis viverra lorem, in semper lorem. Sed nisl arcu euismod sit amet nisi euismod sed cursus arcu elementum ipsum arcu vivamus quis venenatis orci lorem ipsum et magna feugiat veroeros aliquam. Lorem ipsum dolor sit amet nullam dolore.</p>
 </header>
 <section class="tiles">
-    @foreach (var categ in Model)
+    @foreach (var category in Model)
     {
-        var estilo = $"style{categ.Id}";
-        <article class="@estilo">
+        var style = $"style{category.Id}";
+        <article class="@style">
             <span class="image">
-                <img src="@categ.Imagem" alt="@categ.Descricao" />
+                <img src="@category.Image" alt="@category.Description" />
             </span>
-            <a asp-action="Categoria" asp-controller="Home" asp-route-id="@categ.Id" >
-                <h2>@categ.Descricao</h2>
+            <a asp-action="Category" asp-controller="Home" asp-route-id="@category.Id">
+                <h2>@category.Description</h2>
                 <div class="content">
-                    <p>@categ.EmPregao leilões em andamento.</p>
+                    <p>@category.InFloor leilões em andamento.</p>
                 </div>
             </a>
         </article>

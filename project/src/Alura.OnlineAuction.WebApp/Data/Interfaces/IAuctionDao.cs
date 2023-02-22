@@ -4,10 +4,10 @@ namespace Alura.OnlineAuctions.WebApp.Data.Interfaces
 {
     public interface IAuctionDao
     {
-        IList<Leilao> ListAuctions();
-        Leilao? GetAuctionById(int id);
-        void InsertAuction(Leilao auction);
-        void UpdateAuction(Leilao auction);
-        void DeleteAuction(Leilao auction);
+        IList<Auction> ListAuctions();
+        Auction? GetAuctionById(int id);
+        void InsertAuction(Auction auction);
+        void UpdateAuction(Auction auction);
+        void DeleteAuction(Auction auction);
     }
 }

@@ -1,0 +1,99 @@
+@model IEnumerable<Auction>
+
+@{
+    ViewData["Title"] = "Auctions";
+    var search = ViewData["search"];
+}
+
+<div class="card">
+    <div class="card-header d-flex">
+        <h4 class="flex-grow-1">Auctions</h4>
+        <a class="btn btn-outline-primary" asp-controller="Auction" asp-action="Insert" title="Insert">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+            New
+        </a>
+    </div>
+    <div class="card-body">
+        <form class="form-inline mb-3" asp-controller="Auction" asp-action="Search" method="get">
+            <input name="termo" class="form-control flex-grow-1"
+                   value="@search"
+                   placeholder="Search by title, category or description..." />
+            <button class="btn btn-outline-secondary ml-2">
+                <i class="fa fa-search"></i>
+                <span class="d-none d-md-inline">Search</span>
+            </button>
+        </form>
+        <div class="row">
+            <div class="col-12">
+                <table class="col-12 table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var auction in Model)
+                        {
+                            <tr class="row-leilao-@auction.Id">
+                                <td>@auction.Id</td>
+                                <td>@auction.Title</td>
+                                <td>
+                                    @switch (auction.Status)
+                                    {
+                                        case AuctionStatus.Draft:
+                                            <span>Draft</span>
+                                            break;
+                                        case AuctionStatus.Floor:
+                                            <span>Started in @auction.Start.Value.ToString("dd/MM/yyyy hh:mm")</span>
+                                            break;
+                                        case AuctionStatus.Finished:
+                                            <span>Finished in @auction.End.Value.ToString("dd/MM/yyyy hh:mm")</span>
+                                            break;
+                                        default:
+                                            <span>@auction.Status</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>@auction.Description</td>
+                                <td>
+                                    @if (auction.Status == AuctionStatus.Draft)
+                                    {
+                                        <a class="btn btn-light" asp-controller="Auction" asp-action="Update" asp-route-id="@auction.Id" title="Update">
+                                            <i class="fa fa-pencil-alt" aria-hidden="true"></i>
+                                        </a>
+                                        <form asp-action="Start">
+                                            <input type="hidden" name="id" value="@auction.Id" />
+                                            <button class="btn btn-light" title="Start Floor">
+                                                <i class="fas fa-play-circle"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                    @if (auction.Status != AuctionStatus.Floor)
+                                    {
+                                        <a class="btn btn-light btnRemoveLeilao" data-id="@auction.Id" data-titulo="@auction.Title" title="Delete">
+                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                        </a>
+                                    }
+                                    @if (auction.Status == AuctionStatus.Floor)
+                                    {
+                                        <form asp-action="Finish">
+                                            <input type="hidden" name="id" value="@auction.Id" />
+                                            <button class="btn btn-light" title="Finish Floor">
+                                                <i class="fas fa-stop-circle"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -4,6 +4,7 @@ namespace Alura.OnlineAuctions.WebApp.Data.Interfaces
 {
     public interface ICategoryDao
     {
-        IList<Categoria> ListCategories();
+        IList<Category> ListCategories();
+        IList<Category> ListCategoriesWithAuctions();
     }
 }

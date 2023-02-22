@@ -1,5 +1,6 @@
 ﻿using Alura.OnlineAuctions.WebApp.Data.Interfaces;
 using Alura.OnlineAuctions.WebApp.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Alura.OnlineAuctions.WebApp.Data.EfCore
 {
@@ -12,9 +13,16 @@ namespace Alura.OnlineAuctions.WebApp.Data.EfCore
             _dbContext = dbContext;
         }
 
-        public IList<Categoria> ListCategories()
+        public IList<Category> ListCategories()
         {
-            return _dbContext.Categorias.ToList();
+            return _dbContext.Categories.ToList();
+        }
+
+        public IList<Category> ListCategoriesWithAuctions()
+        {
+            return _dbContext.Categories
+                .Include(c => c.Auctions)
+                .ToList();
         }
     }
 }

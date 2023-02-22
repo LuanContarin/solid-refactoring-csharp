@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Alura.OnlineAuctions.WebApp.Controllers
 {
-    public class LeilaoController : Controller
+    public class AuctionController : Controller
     {
         private readonly IAuctionDao _auctionDao;
         private readonly ICategoryDao _categoryDao;
 
-        public LeilaoController(IAuctionDao auctionDao, ICategoryDao categoryDao)
+        public AuctionController(IAuctionDao auctionDao, ICategoryDao categoryDao)
         {
             _auctionDao = auctionDao;
             _categoryDao = categoryDao;
@@ -25,13 +25,13 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
         [HttpGet]
         public IActionResult Insert()
         {
-            ViewData["Categorias"] = _categoryDao.ListCategories();
-            ViewData["Operacao"] = "Inclusão";
+            ViewData["Categories"] = _categoryDao.ListCategories();
+            ViewData["Operation"] = "Insert";
             return View("Form");
         }
 
         [HttpPost]
-        public IActionResult Insert(Leilao model)
+        public IActionResult Insert(Auction model)
         {
             if (ModelState.IsValid)
             {
@@ -39,8 +39,8 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewData["Categorias"] = _categoryDao.ListCategories();
-            ViewData["Operacao"] = "Inclusão";
+            ViewData["Categories"] = _categoryDao.ListCategories();
+            ViewData["Operation"] = "Insert";
 
             return View("Form", model);
         }
@@ -48,8 +48,8 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            ViewData["Categorias"] = _categoryDao.ListCategories();
-            ViewData["Operacao"] = "Edição";
+            ViewData["Categories"] = _categoryDao.ListCategories();
+            ViewData["Operation"] = "Update";
 
             var auction = _auctionDao.GetAuctionById(id);
             if (auction is null)
@@ -59,7 +59,7 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Leilao model)
+        public IActionResult Update(Auction model)
         {
             if (ModelState.IsValid)
             {
@@ -67,23 +67,23 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewData["Categorias"] = _categoryDao.ListCategories();
-            ViewData["Operacao"] = "Edição";
+            ViewData["Categories"] = _categoryDao.ListCategories();
+            ViewData["Operation"] = "Update";
 
             return View("Form", model);
         }
 
         [HttpPost]
-        public IActionResult Inicia(int id)
+        public IActionResult Start(int id)
         {
             var auction = _auctionDao.GetAuctionById(id);
 
             if (auction is null) return NotFound();
-            if (auction.Situacao != SituacaoLeilao.Rascunho)
-                return StatusCode((int)HttpStatusCode.MethodNotAllowed);
+            if (auction.Status != AuctionStatus.Draft)
+                return StatusCode(StatusCodes.Status405MethodNotAllowed);
 
-            auction.Situacao = SituacaoLeilao.Pregao;
-            auction.Inicio = DateTime.Now;
+            auction.Status = AuctionStatus.Floor;
+            auction.Start = DateTime.Now;
 
             _auctionDao.UpdateAuction(auction);
 
@@ -91,16 +91,16 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Finaliza(int id)
+        public IActionResult Finish(int id)
         {
             var auction = _auctionDao.GetAuctionById(id);
 
             if (auction is null) return NotFound();
-            if (auction.Situacao != SituacaoLeilao.Pregao)
-                return StatusCode((int)HttpStatusCode.MethodNotAllowed);
+            if (auction.Status != AuctionStatus.Floor)
+                return StatusCode(StatusCodes.Status405MethodNotAllowed);
 
-            auction.Situacao = SituacaoLeilao.Finalizado;
-            auction.Termino = DateTime.Now;
+            auction.Status = AuctionStatus.Finished;
+            auction.End = DateTime.Now;
 
             _auctionDao.UpdateAuction(auction);
 
@@ -113,8 +113,8 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
             var auction = _auctionDao.GetAuctionById(id);
 
             if (auction is null) return NotFound();
-            if (auction.Situacao == SituacaoLeilao.Pregao)
-                return StatusCode((int)HttpStatusCode.MethodNotAllowed);
+            if (auction.Status == AuctionStatus.Floor)
+                return StatusCode(StatusCodes.Status405MethodNotAllowed);
 
             _auctionDao.DeleteAuction(auction);
 
@@ -122,16 +122,16 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Pesquisa(string termo)
+        public IActionResult Search(string search)
         {
-            ViewData["termo"] = termo;
+            ViewData["search"] = search;
 
             var auctions = _auctionDao
                 .ListAuctions()
-                .Where(l => string.IsNullOrWhiteSpace(termo) ||
-                    l.Titulo.ToUpper().Contains(termo.ToUpper()) ||
-                    l.Descricao.ToUpper().Contains(termo.ToUpper()) ||
-                    l.Categoria.Descricao.ToUpper().Contains(termo.ToUpper())
+                .Where(l => string.IsNullOrWhiteSpace(search) ||
+                    l.Title.ToUpper().Contains(search.ToUpper()) ||
+                    l.Description.ToUpper().Contains(search.ToUpper()) ||
+                    l.Category.Description.ToUpper().Contains(search.ToUpper())
                 );
 
             return View("Index", auctions);

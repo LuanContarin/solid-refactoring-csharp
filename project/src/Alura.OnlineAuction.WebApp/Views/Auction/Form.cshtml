@@ -1,0 +1,49 @@
+@model Auction
+
+@{
+    IEnumerable<Category> categories = (IEnumerable<Category>)ViewData["Categories"];
+    ViewData["Title"] = $"Auction - {ViewData["Operation"]}";
+    string operation = ViewData["Operation"].ToString();
+    bool isUpdate = operation == "Update";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h4>@ViewData["Title"]</h4>
+    </div>
+    <form class="card-body form-row needs-validation" role="form" asp-controller="Auction">
+        @if (isUpdate)
+        {
+            <input type="hidden" asp-for="Id" />
+        }
+        <div class="form-group col-8">
+            <label asp-for="Title"></label>
+            <input class="form-control" asp-for="Title" />
+            <span class="invalid-feedback" asp-validation-for="Title"></span>
+        </div>
+        <div class="form-group col-4">
+            <label asp-for="IdCategory">Category:</label>
+            <select class="form-control" asp-for="IdCategory">
+                @foreach (var category in categories.OrderBy(c => c.Description))
+                {
+                    <option value="@category.Id">@category.Description</option>
+                }
+            </select>
+        </div>
+        <div class="form-group col-12">
+            <label asp-for="Description"></label>
+            <textarea class="form-control" asp-for="Description" rows="8"></textarea>
+        </div>
+        <div class="mt-3 text-right bg-secondary">
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-save" aria-hidden="true"></i>
+                Save
+            </button>
+            <a class="btn btn-outline-secondary" asp-controller="Auction" asp-action="Index">Voltar</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

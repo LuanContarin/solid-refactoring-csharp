@@ -1,35 +1,35 @@
-﻿using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Alura.OnlineAuctions.WebApp.Data.Interfaces;
 using Alura.OnlineAuctions.WebApp.Models;
-using Microsoft.AspNetCore.Routing;
-using Alura.OnlineAuctions.WebApp.Data;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Alura.OnlineAuctions.WebApp.Controllers
 {
     public class HomeController : Controller
     {
-        AppDbContext _context;
+        private readonly ICategoryDao _categoryDao;
+        private readonly IAuctionDao _auctionDao;
 
-        public HomeController()
+        public HomeController(ICategoryDao categoryDao, IAuctionDao auctionDao)
         {
-            _context = new AppDbContext();
+            _categoryDao = categoryDao;
+            _auctionDao = auctionDao;
         }
 
         public IActionResult Index()
         {
-            var categorias = _context.Categorias
-                .Include(c => c.Leiloes)
-                .Select(c => new CategoriaComInfoLeilao
+            var categories = _categoryDao
+                .ListCategoriesWithAuctions()
+                .Select(c => new CategoryWithInfoAuction
                 {
                     Id = c.Id,
-                    Descricao = c.Descricao,
-                    Imagem = c.Imagem,
-                    EmRascunho = c.Leiloes.Where(l => l.Situacao == SituacaoLeilao.Rascunho).Count(),
-                    EmPregao = c.Leiloes.Where(l => l.Situacao == SituacaoLeilao.Pregao).Count(),
-                    Finalizados = c.Leiloes.Where(l => l.Situacao == SituacaoLeilao.Finalizado).Count(),
+                    Description = c.Description,
+                    Image = c.Image,
+                    InDraft = c.Auctions.Where(l => l.Status == AuctionStatus.Draft).Count(),
+                    InFloor = c.Auctions.Where(l => l.Status == AuctionStatus.Floor).Count(),
+                    Finalized = c.Auctions.Where(l => l.Status == AuctionStatus.Finished).Count(),
                 });
-            return View(categorias);
+
+            return View(categories);
         }
 
         [Route("[controller]/StatusCode/{statusCode}")]
@@ -39,27 +39,31 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
             return View(statusCode);
         }
 
-        [Route("[controller]/Categoria/{categoria}")]
-        public IActionResult Categoria(int categoria)
+        [Route("[controller]/Category/{idCategory}")]
+        public IActionResult Category(int idCategory)
         {
-            var categ = _context.Categorias
-                .Include(c => c.Leiloes)
-                .First(c => c.Id == categoria);
-            return View(categ);
+            var categories = _categoryDao
+                .ListCategoriesWithAuctions()
+                .First(c => c.Id == idCategory);
+
+            return View(categories);
         }
 
         [HttpPost]
-        [Route("[controller]/Busca")]
-        public IActionResult Busca(string termo)
+        [Route("[controller]/Search")]
+        public IActionResult Search(string search)
         {
-            ViewData["termo"] = termo;
-            var termoNormalized = termo.ToUpper();
-            var leiloes = _context.Leiloes
+            ViewData["search"] = search;
+
+            var searchNormalized = search.ToUpper();
+            var auctions = _auctionDao
+                .ListAuctions()
                 .Where(c =>
-                    c.Titulo.ToUpper().Contains(termoNormalized) ||
-                    c.Descricao.ToUpper().Contains(termoNormalized) ||
-                    c.Categoria.Descricao.ToUpper().Contains(termoNormalized));
-            return View(leiloes);
+                    c.Title.ToUpper().Contains(searchNormalized) ||
+                    c.Description.ToUpper().Contains(searchNormalized) ||
+                    c.Category.Description.ToUpper().Contains(searchNormalized));
+
+            return View(auctions);
         }
     }
 }
