@@ -6,5 +6,6 @@ namespace Alura.OnlineAuctions.WebApp.Data.Interfaces
     {
         IList<Category> ListCategories();
         IList<Category> ListCategoriesWithAuctions();
+        Category? GetCategoryWithAuctionById(int id);
     }
 }

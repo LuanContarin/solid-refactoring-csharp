@@ -15,13 +15,19 @@
     </div>
     <div class="card-body">
         <form class="form-inline mb-3" asp-controller="Auction" asp-action="Search" method="get">
-            <input name="termo" class="form-control flex-grow-1"
-                   value="@search"
-                   placeholder="Search by title, category or description..." />
-            <button class="btn btn-outline-secondary ml-2">
-                <i class="fa fa-search"></i>
-                <span class="d-none d-md-inline">Search</span>
-            </button>
+            <div class="row">
+                <div class="col-12 col-md-8">
+                    <input name="search" class="form-control"
+                           value="@search"
+                           placeholder="Search by title, category or description..." />
+                </div>
+                <div class="col-12 col-md-4">
+                    <button class="btn btn-outline-secondary ml-2">
+                        <i class="fa fa-search"></i>
+                        <span class="d-none d-md-inline">Search</span>
+                    </button>
+                </div>
+            </div>
         </form>
         <div class="row">
             <div class="col-12">

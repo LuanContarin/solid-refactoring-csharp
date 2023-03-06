@@ -20,6 +20,16 @@ namespace Alura.OnlineAuctions.WebApp.Data.EfCore
                 .ToList();
         }
 
+        public IList<Auction> SearchAuction(string search)
+        {
+            return _dbContext.Auctions
+                .Where(l => string.IsNullOrWhiteSpace(search)
+                            || l.Title.ToUpper().Contains(search.ToUpper())
+                            || l.Description.ToUpper().Contains(search.ToUpper())
+                            || l.Category.Description.ToUpper().Contains(search.ToUpper()))
+                .ToList();
+        }
+
         public Auction? GetAuctionById(int id)
         {
             return _dbContext.Auctions.Find(id);

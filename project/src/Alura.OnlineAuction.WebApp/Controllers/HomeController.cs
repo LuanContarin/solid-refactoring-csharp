@@ -1,33 +1,21 @@
-﻿using Alura.OnlineAuctions.WebApp.Data.Interfaces;
-using Alura.OnlineAuctions.WebApp.Models;
+﻿using Alura.OnlineAuctions.WebApp.Models;
+using Alura.OnlineAuctions.WebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Alura.OnlineAuctions.WebApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ICategoryDao _categoryDao;
-        private readonly IAuctionDao _auctionDao;
+        private readonly IProductService _productService;
 
-        public HomeController(ICategoryDao categoryDao, IAuctionDao auctionDao)
+        public HomeController(IProductService productService)
         {
-            _categoryDao = categoryDao;
-            _auctionDao = auctionDao;
+            _productService = productService;
         }
 
         public IActionResult Index()
         {
-            var categories = _categoryDao
-                .ListCategoriesWithAuctions()
-                .Select(c => new CategoryWithInfoAuction
-                {
-                    Id = c.Id,
-                    Description = c.Description,
-                    Image = c.Image,
-                    InDraft = c.Auctions.Where(l => l.Status == AuctionStatus.Draft).Count(),
-                    InFloor = c.Auctions.Where(l => l.Status == AuctionStatus.Floor).Count(),
-                    Finalized = c.Auctions.Where(l => l.Status == AuctionStatus.Finished).Count(),
-                });
+            var categories = _productService.ListCategoriesWithAuctions();
 
             return View(categories);
         }
@@ -42,11 +30,9 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
         [Route("[controller]/Category/{idCategory}")]
         public IActionResult Category(int idCategory)
         {
-            var categories = _categoryDao
-                .ListCategoriesWithAuctions()
-                .First(c => c.Id == idCategory);
+            var category = _productService.GetCategoryWithAuctionsById(idCategory);
 
-            return View(categories);
+            return View(category);
         }
 
         [HttpPost]
@@ -56,12 +42,7 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
             ViewData["search"] = search;
 
             var searchNormalized = search.ToUpper();
-            var auctions = _auctionDao
-                .ListAuctions()
-                .Where(c =>
-                    c.Title.ToUpper().Contains(searchNormalized) ||
-                    c.Description.ToUpper().Contains(searchNormalized) ||
-                    c.Category.Description.ToUpper().Contains(searchNormalized));
+            var auctions = _productService.ListAuctionsBySearch(searchNormalized);
 
             return View(auctions);
         }

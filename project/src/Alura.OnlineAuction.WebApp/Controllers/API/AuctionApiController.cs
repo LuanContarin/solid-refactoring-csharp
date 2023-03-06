@@ -1,5 +1,5 @@
-﻿using Alura.OnlineAuctions.WebApp.Data.Interfaces;
-using Alura.OnlineAuctions.WebApp.Models;
+﻿using Alura.OnlineAuctions.WebApp.Models;
+using Alura.OnlineAuctions.WebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Alura.OnlineAuctions.WebApp.Controllers.API
@@ -8,26 +8,24 @@ namespace Alura.OnlineAuctions.WebApp.Controllers.API
     [Route("/api/auctions")]
     public sealed class AuctionApiController : ControllerBase
     {
-        private readonly IAuctionDao _auctionDao;
-        private readonly ICategoryDao _categoryDao;
+        private readonly IAdminService _adminService;
 
-        public AuctionApiController(IAuctionDao auctionDao, ICategoryDao categoryDao)
+        public AuctionApiController(IAdminService adminService)
         {
-            _auctionDao = auctionDao;
-            _categoryDao = categoryDao;
+            _adminService = adminService;
         }
 
         [HttpGet]
         public IActionResult EndpointGetLeiloes()
         {
-            var auctions = _auctionDao.ListAuctions();
+            var auctions = _adminService.ListAuctions();
             return Ok(auctions);
         }
 
         [HttpGet("{id}")]
         public IActionResult EndpointGetAuctionById(int id)
         {
-            var auction = _auctionDao.GetAuctionById(id);
+            var auction = _adminService.GetAuctionById(id);
             if (auction is null)
                 return NotFound();
 
@@ -37,26 +35,48 @@ namespace Alura.OnlineAuctions.WebApp.Controllers.API
         [HttpPost]
         public IActionResult EndpointPostAuction(Auction auction)
         {
-            _auctionDao.InsertAuction(auction);
+            _adminService.InsertAuction(auction);
             return CreatedAtAction(nameof(EndpointGetAuctionById), auction);
         }
 
         [HttpPut]
         public IActionResult EndpointPutAuction(Auction auction)
         {
-            _auctionDao.UpdateAuction(auction);
+            _adminService.UpdateAuction(auction);
             return Ok(auction);
         }
 
         [HttpDelete("{id}")]
         public IActionResult EndpointDeleteAuction(int id)
         {
-            var auction = _auctionDao.GetAuctionById(id);
+            var auction = _adminService.GetAuctionById(id);
             if (auction is null)
                 return NotFound();
 
-            _auctionDao.DeleteAuction(auction);
+            _adminService.DeleteAuction(auction);
             return NoContent();
+        }
+
+        [HttpPost("{id}/floor")]
+        public IActionResult EndpointStartFloor(int id)
+        {
+            var auction = _adminService.GetAuctionById(id);
+            if (auction is null)
+                return NotFound();
+
+            _adminService.StartAuctionFloorById(id);
+            return Ok();
+        }
+
+        [HttpDelete("{id}/pregao")]
+        public IActionResult EndpointFinishFloor(int id)
+        {
+            var auction = _adminService.GetAuctionById(id);
+            if (auction is null)
+                return NotFound();
+
+            _adminService.FinishAuctionFloorById(id);
+            return Ok();
         }
     }
 }

@@ -24,5 +24,12 @@ namespace Alura.OnlineAuctions.WebApp.Data.EfCore
                 .Include(c => c.Auctions)
                 .ToList();
         }
+
+        public Category? GetCategoryWithAuctionById(int id)
+        {
+            return _dbContext.Categories
+                .Include(c => c.Auctions)
+                .FirstOrDefault(c => c.Id == id);
+        }
     }
 }

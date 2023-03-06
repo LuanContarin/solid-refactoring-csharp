@@ -1,21 +1,19 @@
-﻿function anexaEventoNoCliqueBotoesRemoveLeilao() {
-    let botoesRemocaoLeilao = document.querySelectorAll('.btnRemoveLeilao');
-    botoesRemocaoLeilao.forEach(btn => $(btn).on('click', () => {
-        let leilao = $(btn).data();
-        if (window.confirm(`Confirma a exclusão do leilão ${leilao.titulo}?`)) {
+﻿function addButtonEventRemoveAuction() {
+    let removeAuctionButtons = document.querySelectorAll('.btnRemoveLeilao');
+    removeAuctionButtons.forEach(btn => $(btn).on('click', () => {
+        let auction = $(btn).data();
+        if (window.confirm(`Confirm deletion of auction ${auction.titulo}?`)) {
             jQuery.ajax({
-                url: `/Leilao/Remove/${leilao.id}`,
+                url: `/Auction/Remove/${auction.id}`,
                 method: 'post',
-                success: () => $(`.row-leilao-${leilao.id}`).hide('slow'),
-                error: () => window.alert('Houve um erro ao excluir')
+                success: () => $(`.row-leilao-${auction.id}`).hide('slow'),
+                error: () => window.alert('An error ocurred when deleting')
             });
         }
     }));
 }
 
 $(document).ready(function () {
-
-    anexaEventoNoCliqueBotoesRemoveLeilao();
-
+    addButtonEventRemoveAuction();
 
 });

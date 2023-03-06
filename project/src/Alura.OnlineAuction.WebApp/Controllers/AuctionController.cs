@@ -1,31 +1,28 @@
-using System.Net;
-using Alura.OnlineAuctions.WebApp.Data.Interfaces;
 using Alura.OnlineAuctions.WebApp.Models;
+using Alura.OnlineAuctions.WebApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Alura.OnlineAuctions.WebApp.Controllers
 {
     public class AuctionController : Controller
     {
-        private readonly IAuctionDao _auctionDao;
-        private readonly ICategoryDao _categoryDao;
+        private readonly IAdminService _adminService;
 
-        public AuctionController(IAuctionDao auctionDao, ICategoryDao categoryDao)
+        public AuctionController(IAdminService adminService)
         {
-            _auctionDao = auctionDao;
-            _categoryDao = categoryDao;
+            _adminService = adminService;
         }
 
         public IActionResult Index()
         {
-            var auctions = _auctionDao.ListAuctions();
+            var auctions = _adminService.ListAuctions();
             return View(auctions);
         }
 
         [HttpGet]
         public IActionResult Insert()
         {
-            ViewData["Categories"] = _categoryDao.ListCategories();
+            ViewData["Categories"] = _adminService.ListCategories();
             ViewData["Operation"] = "Insert";
             return View("Form");
         }
@@ -35,11 +32,11 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                _auctionDao.InsertAuction(model);
+                _adminService.InsertAuction(model);
                 return RedirectToAction("Index");
             }
 
-            ViewData["Categories"] = _categoryDao.ListCategories();
+            ViewData["Categories"] = _adminService.ListCategories();
             ViewData["Operation"] = "Insert";
 
             return View("Form", model);
@@ -48,10 +45,10 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            ViewData["Categories"] = _categoryDao.ListCategories();
+            ViewData["Categories"] = _adminService.ListCategories();
             ViewData["Operation"] = "Update";
 
-            var auction = _auctionDao.GetAuctionById(id);
+            var auction = _adminService.GetAuctionById(id);
             if (auction is null)
                 return NotFound();
 
@@ -63,11 +60,11 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                _auctionDao.UpdateAuction(model);
+                _adminService.UpdateAuction(model);
                 return RedirectToAction("Index");
             }
 
-            ViewData["Categories"] = _categoryDao.ListCategories();
+            ViewData["Categories"] = _adminService.ListCategories();
             ViewData["Operation"] = "Update";
 
             return View("Form", model);
@@ -76,48 +73,36 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
         [HttpPost]
         public IActionResult Start(int id)
         {
-            var auction = _auctionDao.GetAuctionById(id);
+            var auction = _adminService.GetAuctionById(id);
 
-            if (auction is null) return NotFound();
-            if (auction.Status != AuctionStatus.Draft)
-                return StatusCode(StatusCodes.Status405MethodNotAllowed);
+            if (auction is null)
+                return NotFound();
 
-            auction.Status = AuctionStatus.Floor;
-            auction.Start = DateTime.Now;
-
-            _auctionDao.UpdateAuction(auction);
-
+            _adminService.StartAuctionFloorById(id);
             return RedirectToAction("Index");
         }
 
         [HttpPost]
         public IActionResult Finish(int id)
         {
-            var auction = _auctionDao.GetAuctionById(id);
+            var auction = _adminService.GetAuctionById(id);
 
-            if (auction is null) return NotFound();
-            if (auction.Status != AuctionStatus.Floor)
-                return StatusCode(StatusCodes.Status405MethodNotAllowed);
+            if (auction is null)
+                return NotFound();
 
-            auction.Status = AuctionStatus.Finished;
-            auction.End = DateTime.Now;
-
-            _auctionDao.UpdateAuction(auction);
-
+            _adminService.FinishAuctionFloorById(id);
             return RedirectToAction("Index");
         }
 
         [HttpPost]
         public IActionResult Remove(int id)
         {
-            var auction = _auctionDao.GetAuctionById(id);
+            var auction = _adminService.GetAuctionById(id);
 
-            if (auction is null) return NotFound();
-            if (auction.Status == AuctionStatus.Floor)
-                return StatusCode(StatusCodes.Status405MethodNotAllowed);
+            if (auction is null)
+                return NotFound();
 
-            _auctionDao.DeleteAuction(auction);
-
+            _adminService.DeleteAuction(auction);
             return NoContent();
         }
 
@@ -126,14 +111,7 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
         {
             ViewData["search"] = search;
 
-            var auctions = _auctionDao
-                .ListAuctions()
-                .Where(l => string.IsNullOrWhiteSpace(search) ||
-                    l.Title.ToUpper().Contains(search.ToUpper()) ||
-                    l.Description.ToUpper().Contains(search.ToUpper()) ||
-                    l.Category.Description.ToUpper().Contains(search.ToUpper())
-                );
-
+            var auctions = _adminService.ListAuctionsBySearch(search);
             return View("Index", auctions);
         }
     }
