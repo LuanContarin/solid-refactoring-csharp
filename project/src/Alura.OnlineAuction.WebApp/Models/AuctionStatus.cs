@@ -4,6 +4,7 @@
     {
         Draft,
         Floor,
-        Finished
+        Finished,
+        Archived
     }
 }

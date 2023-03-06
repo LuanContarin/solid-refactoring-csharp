@@ -2,6 +2,8 @@ using Alura.OnlineAuctions.WebApp.Data;
 using Alura.OnlineAuctions.WebApp.Data.EfCore;
 using Alura.OnlineAuctions.WebApp.Data.Interfaces;
 using Alura.OnlineAuctions.WebApp.Seeding;
+using Alura.OnlineAuctions.WebApp.Services.Handlers;
+using Alura.OnlineAuctions.WebApp.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,9 @@ builder.Services.AddDbContext<AppDbContext>();
 
 builder.Services.AddTransient<IAuctionDao, AuctionDao>();
 builder.Services.AddTransient<ICategoryDao, CategoryDao>();
+
+builder.Services.AddTransient<IAdminService, ArchiveAdminService>();
+builder.Services.AddTransient<IProductService, DefaultProductService>();
 
 builder.Services
     .AddControllersWithViews()
