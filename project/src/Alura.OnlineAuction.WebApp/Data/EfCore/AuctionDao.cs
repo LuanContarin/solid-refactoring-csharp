@@ -13,13 +13,6 @@ namespace Alura.OnlineAuctions.WebApp.Data.EfCore
             _dbContext = dbContext;
         }
 
-        public IList<Auction> ListAuctions()
-        {
-            return _dbContext.Auctions
-                .Include(x => x.Category)
-                .ToList();
-        }
-
         public IList<Auction> SearchAuction(string search)
         {
             return _dbContext.Auctions
@@ -30,26 +23,33 @@ namespace Alura.OnlineAuctions.WebApp.Data.EfCore
                 .ToList();
         }
 
-        public Auction? GetAuctionById(int id)
+        public IList<Auction> GetAll()
+        {
+            return _dbContext.Auctions
+                .Include(x => x.Category)
+                .ToList();
+        }
+
+        public Auction? GetbyId(int id)
         {
             return _dbContext.Auctions.Find(id);
         }
 
-        public void InsertAuction(Auction auction)
+        public void Insert(Auction entity)
         {
-            _dbContext.Auctions.Add(auction);
+            _dbContext.Auctions.Add(entity);
             _dbContext.SaveChanges();
         }
 
-        public void UpdateAuction(Auction auction)
+        public void Update(Auction entity)
         {
-            _dbContext.Auctions.Update(auction);
+            _dbContext.Auctions.Update(entity);
             _dbContext.SaveChanges();
         }
 
-        public void DeleteAuction(Auction auction)
+        public void Delete(Auction entity)
         {
-            _dbContext.Auctions.Remove(auction);
+            _dbContext.Auctions.Remove(entity);
             _dbContext.SaveChanges();
         }
     }

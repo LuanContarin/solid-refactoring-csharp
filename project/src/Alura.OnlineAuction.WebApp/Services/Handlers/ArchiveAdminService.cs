@@ -33,7 +33,10 @@ namespace Alura.OnlineAuctions.WebApp.Services.Handlers
 
         public IList<Auction> ListAuctionsBySearch(string search)
         {
-            return _defaultService.ListAuctionsBySearch(search);
+            return _defaultService
+                .ListAuctionsBySearch(search)
+                .Where(x => x.Status != AuctionStatus.Archived)
+                .ToList();
         }
 
         public void InsertAuction(Auction auction)

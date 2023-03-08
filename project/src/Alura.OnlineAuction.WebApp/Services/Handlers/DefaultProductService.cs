@@ -23,7 +23,7 @@ namespace Alura.OnlineAuctions.WebApp.Services.Handlers
         public IList<CategoryWithInfoAuction> ListCategoriesWithAuctions()
         {
             return _categoryDao
-                .ListCategoriesWithAuctions()
+                .GetAllWithAuctions()
                 .Select(c => new CategoryWithInfoAuction
                 {
                     Id = c.Id,
@@ -37,7 +37,7 @@ namespace Alura.OnlineAuctions.WebApp.Services.Handlers
 
         public Category? GetCategoryWithAuctionsById(int id)
         {
-            return _categoryDao.GetCategoryWithAuctionById(id);
+            return _categoryDao.GetByIdWithAuctions(id);
         }
     }
 }

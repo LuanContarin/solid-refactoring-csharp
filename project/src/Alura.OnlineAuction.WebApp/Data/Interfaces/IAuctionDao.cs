@@ -2,13 +2,8 @@
 
 namespace Alura.OnlineAuctions.WebApp.Data.Interfaces
 {
-    public interface IAuctionDao
+    public interface IAuctionDao : IQuery<Auction>, ICommand<Auction>
     {
-        IList<Auction> ListAuctions();
         IList<Auction> SearchAuction(string search);
-        Auction? GetAuctionById(int id);
-        void InsertAuction(Auction auction);
-        void UpdateAuction(Auction auction);
-        void DeleteAuction(Auction auction);
     }
 }

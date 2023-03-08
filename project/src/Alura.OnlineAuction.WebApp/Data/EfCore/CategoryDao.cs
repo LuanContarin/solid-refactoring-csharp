@@ -13,22 +13,29 @@ namespace Alura.OnlineAuctions.WebApp.Data.EfCore
             _dbContext = dbContext;
         }
 
-        public IList<Category> ListCategories()
-        {
-            return _dbContext.Categories.ToList();
-        }
-
-        public IList<Category> ListCategoriesWithAuctions()
+        public IList<Category> GetAllWithAuctions()
         {
             return _dbContext.Categories
                 .Include(c => c.Auctions)
                 .ToList();
         }
 
-        public Category? GetCategoryWithAuctionById(int id)
+        public Category? GetByIdWithAuctions(int id)
         {
             return _dbContext.Categories
                 .Include(c => c.Auctions)
+                .FirstOrDefault(c => c.Id == id);
+        }
+
+        public IList<Category> GetAll()
+        {
+            return _dbContext.Categories
+                .ToList();
+        }
+
+        public Category? GetbyId(int id)
+        {
+            return _dbContext.Categories
                 .FirstOrDefault(c => c.Id == id);
         }
     }

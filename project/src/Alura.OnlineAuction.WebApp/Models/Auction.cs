@@ -24,7 +24,7 @@ namespace Alura.OnlineAuctions.WebApp.Models
         public DateTime? End { get; set; }
 
         public int IdCategory { get; set; }
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
         public AuctionStatus Status { get; set; }
 
         public string PosterUrl => $"/images/poster-{Id}.jpg";

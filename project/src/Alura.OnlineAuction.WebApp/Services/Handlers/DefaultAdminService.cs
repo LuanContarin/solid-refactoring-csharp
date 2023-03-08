@@ -17,17 +17,17 @@ namespace Alura.OnlineAuctions.WebApp.Services.Handlers
 
         public IList<Category> ListCategories()
         {
-            return _categoryDao.ListCategories();
+            return _categoryDao.GetAll();
         }
 
         public IList<Auction> ListAuctions()
         {
-            return _auctionDao.ListAuctions();
+            return _auctionDao.GetAll();
         }
 
         public Auction? GetAuctionById(int id)
         {
-            return _auctionDao.GetAuctionById(id);
+            return _auctionDao.GetbyId(id);
         }
 
         public IList<Auction> ListAuctionsBySearch(string search)
@@ -37,38 +37,38 @@ namespace Alura.OnlineAuctions.WebApp.Services.Handlers
 
         public void InsertAuction(Auction auction)
         {
-            _auctionDao.InsertAuction(auction);
+            _auctionDao.Insert(auction);
         }
 
         public void UpdateAuction(Auction auction)
         {
-            _auctionDao.UpdateAuction(auction);
+            _auctionDao.Update(auction);
         }
 
         public void DeleteAuction(Auction auction)
         {
-            _auctionDao.DeleteAuction(auction);
+            _auctionDao.Delete(auction);
         }
 
         public void StartAuctionFloorById(int id)
         {
-            var auction = _auctionDao.GetAuctionById(id);
+            var auction = _auctionDao.GetbyId(id);
             if (auction is not null && auction.Status == AuctionStatus.Draft)
             {
                 auction.Status = AuctionStatus.Floor;
                 auction.Start = DateTime.Now;
-                _auctionDao.UpdateAuction(auction);
+                _auctionDao.Update(auction);
             }
         }
 
         public void FinishAuctionFloorById(int id)
         {
-            var auction = _auctionDao.GetAuctionById(id);
+            var auction = _auctionDao.GetbyId(id);
             if (auction is not null && auction.Status == AuctionStatus.Floor)
             {
                 auction.Status = AuctionStatus.Finished;
                 auction.End = DateTime.Now;
-                _auctionDao.UpdateAuction(auction);
+                _auctionDao.Update(auction);
             }
         }
     }

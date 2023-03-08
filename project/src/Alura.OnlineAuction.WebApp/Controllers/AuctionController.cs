@@ -43,7 +43,7 @@ namespace Alura.OnlineAuctions.WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public IActionResult Update(int id)
         {
             ViewData["Categories"] = _adminService.ListCategories();
             ViewData["Operation"] = "Update";
